@@ -1,0 +1,387 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #101214;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #f7f4ec;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.shade {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, calc(var(--hit, 0) * .2)), transparent 16%),
+    linear-gradient(to top, rgba(5, 8, 10, .46), transparent 38%),
+    radial-gradient(circle at center, transparent 52%, rgba(0, 0, 0, .36));
+}
+
+.start {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  border: 0;
+  background: rgba(12, 14, 16, .5);
+  color: #fff;
+  cursor: crosshair;
+  text-align: center;
+}
+
+.start span {
+  font-size: clamp(38px, 8vw, 88px);
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-shadow: 0 4px 22px rgba(0, 0, 0, .5);
+}
+
+.start small {
+  font-size: clamp(14px, 2vw, 18px);
+  color: #d9e4e6;
+}
+
+.playing .start {
+  display: none;
+}
+
+.hud {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.stat {
+  min-width: 108px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 8px;
+  background: rgba(15, 17, 18, .48);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, .18);
+  backdrop-filter: blur(10px);
+}
+
+.stat b,
+.stat span {
+  display: block;
+}
+
+.stat b {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.stat span {
+  margin-top: 5px;
+  color: #b8c6c8;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.reticle {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 36px;
+  height: 36px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.reticle i {
+  position: absolute;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 0 8px rgba(0, 0, 0, .7);
+}
+
+.reticle i:nth-child(1),
+.reticle i:nth-child(2) {
+  left: 17px;
+  width: 2px;
+  height: 10px;
+}
+
+.reticle i:nth-child(1) {
+  top: 0;
+}
+
+.reticle i:nth-child(2) {
+  bottom: 0;
+}
+
+.reticle i:nth-child(3),
+.reticle i:nth-child(4) {
+  top: 17px;
+  width: 10px;
+  height: 2px;
+}
+
+.reticle i:nth-child(3) {
+  left: 0;
+}
+
+.reticle i:nth-child(4) {
+  right: 0;
+}
+
+.aiming .reticle {
+  opacity: .36;
+}
+
+.scoped .reticle {
+  opacity: 0;
+}
+
+.scope {
+  position: fixed;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, rgba(176, 219, 226, .12) 0 25vmin, rgba(111, 137, 138, .12) 30vmin, rgba(0, 0, 0, .22) 33vmin),
+    radial-gradient(circle at center, rgba(255, 255, 255, .08), transparent 25vmin);
+}
+
+.scope i,
+.scope b,
+.scope em {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.scope i {
+  width: min(62vmin, 620px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(10, 12, 12, .32);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 32px rgba(0, 0, 0, .18),
+    inset 0 0 90px rgba(110, 150, 155, .12);
+}
+
+.scope b::before,
+.scope b::after,
+.scope em::before,
+.scope em::after {
+  content: "";
+  position: absolute;
+  background: rgba(12, 18, 18, .72);
+}
+
+.scope b::before {
+  width: min(24vmin, 210px);
+  height: 2px;
+  right: 16px;
+}
+
+.scope b::after {
+  width: min(24vmin, 210px);
+  height: 2px;
+  left: 16px;
+}
+
+.scope em::before {
+  width: 2px;
+  height: min(24vmin, 210px);
+  bottom: 16px;
+}
+
+.scope em::after {
+  width: 2px;
+  height: min(24vmin, 210px);
+  top: 16px;
+}
+
+.scoped .scope {
+  display: block;
+}
+
+.weapons {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  display: flex;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+
+.weapons button {
+  min-width: 118px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 8px;
+  background: rgba(9, 10, 11, .58);
+  color: #edf6f4;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.weapons button b {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .15);
+}
+
+.weapons button.active {
+  border-color: rgba(255, 218, 128, .86);
+  background: rgba(111, 84, 32, .78);
+}
+
+.feed {
+  position: fixed;
+  top: 94px;
+  right: 18px;
+  display: grid;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.feed div {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(12, 14, 16, .58);
+  color: #f9dda2;
+  font-weight: 800;
+}
+
+.chat {
+  position: fixed;
+  left: 18px;
+  bottom: 88px;
+  width: min(360px, calc(100vw - 36px));
+  display: grid;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.chat-log {
+  min-height: 96px;
+  max-height: 150px;
+  overflow: hidden auto;
+  display: grid;
+  align-content: end;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 8px;
+  background: rgba(9, 10, 11, .5);
+  backdrop-filter: blur(10px);
+}
+
+.chat-log div {
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.chat-log b {
+  color: #f6d47c;
+}
+
+.chat-log span {
+  color: #edf4f2;
+}
+
+.chat-form {
+  display: grid;
+  grid-template-columns: 1fr 70px;
+  gap: 6px;
+}
+
+.chat input,
+.chat button {
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 8px;
+  background: rgba(10, 11, 12, .72);
+  color: #f8faf7;
+  font: inherit;
+}
+
+.chat input {
+  padding: 0 10px;
+  outline: none;
+}
+
+.chat input:focus {
+  border-color: rgba(255, 218, 128, .86);
+}
+
+.chat button {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+@media (max-width: 720px) {
+  .hud {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+  }
+
+  .stat {
+    min-width: 84px;
+    padding: 8px;
+  }
+
+  .stat b {
+    font-size: 16px;
+  }
+
+  .weapons {
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    transform: none;
+  }
+
+  .weapons button {
+    min-width: 0;
+    width: 100%;
+    font-size: 13px;
+  }
+
+  .chat {
+    left: 10px;
+    bottom: 184px;
+    width: calc(100vw - 20px);
+  }
+
+  .chat-log {
+    min-height: 74px;
+    max-height: 92px;
+  }
+}
