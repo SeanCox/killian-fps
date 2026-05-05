@@ -249,7 +249,10 @@ let hitFlash = 0;
 let controlsActive = false;
 let aimProgress = 0;
 let aiming = false;
-const playerId = crypto.randomUUID();
+const playerId =
+  typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : `player-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 const playerName = `Player ${playerId.slice(0, 4).toUpperCase()}`;
 const remotePlayers = new Map<string, RemotePlayer>();
 const multiplayerChannel = "BroadcastChannel" in window ? new BroadcastChannel("la-fps-multiplayer") : undefined;
